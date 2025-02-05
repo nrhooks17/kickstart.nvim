@@ -211,6 +211,16 @@ vim.api.nvim_create_autocmd('VimEnter', {
   end,
 })
 
+-- 4 space indents for Go files.
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'go',
+  callback = function()
+    vim.opt_local.expandtab = false
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -573,7 +583,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {},
         pyright = {},
         tsserver = {},
         csharp_ls = {},
@@ -630,6 +640,19 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+        },
+      }
+
+      require('lspconfig').gopls.setup {
+        settings = {
+          gopls = {
+            analyses = {
+              unusedParams = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+            ['formatting.gofumpt'] = true,
+          },
         },
       }
     end,
